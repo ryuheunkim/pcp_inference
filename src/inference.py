@@ -4,6 +4,8 @@ import numpy as np
 import torch
 from collections import OrderedDict
 
+import _init_pointcept_path
+
 # Pointcept 라이브러리 임포트
 from pointcept.datasets import build_dataset
 from pointcept.models import build_model
@@ -31,7 +33,7 @@ def main():
     # 1. 인자 파싱 (launch.json의 args를 받음)
     parser = argparse.ArgumentParser()
     parser.add_argument("--config-file", type=str, required=True, help="Path to config file")
-    parser.add_argument("--weight", type=str, required=True, help="Path to checkpoint")
+    # parser.add_argument("--weight", type=str, required=True, help="Path to checkpoint")
     args = parser.parse_args()
 
     # 2. Config 파일 로드 (fromfile 사용)

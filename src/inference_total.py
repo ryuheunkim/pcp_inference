@@ -5,6 +5,8 @@ import torch
 from collections import OrderedDict
 from tqdm import tqdm
 
+import _init_pointcept_path
+
 # Pointcept 라이브러리 임포트
 from pointcept.datasets import build_dataset
 from pointcept.models import build_model
@@ -80,11 +82,13 @@ def calculate_view_stats(pred, gt, num_classes=16, ignore_index=-1):
     return intersection, union
 
 def main():
+    print("--- [Step 1] Arguments Parsed ---") #### 추가
     parser = argparse.ArgumentParser()
     parser.add_argument("--config-file", type=str, required=True)
     parser.add_argument("--weight", type=str, required=True)
     args = parser.parse_args()
 
+    print("--- [Step 2] Config Loaded ---") #### 추가
     cfg = Config.fromfile(args.config_file)
     
     # -------------------------------------------------------------------------
@@ -106,8 +110,9 @@ def main():
         ],
         test_mode=False,
     )
-
+    print("--- [Step 3] Building Model (This might take time) ---") #### 추가   
     model = build_model(cfg.model).cuda()
+    print("--- [Step 4] Model Built. Loading Weights... ---") #### 추가
     checkpoint = torch.load(args.weight, map_location="cuda")
     state_dict = checkpoint["state_dict"] if "state_dict" in checkpoint else checkpoint
     new_state_dict = OrderedDict()
@@ -118,6 +123,7 @@ def main():
     model.eval()
 
     # 데이터셋 로드
+    print("--- [Step 5] Weights Loaded. Building Dataset... ---") #### 추가
     print(">>> 데이터셋 로드 및 필터링 준비...")
     dataset = build_dataset(data_config)
     

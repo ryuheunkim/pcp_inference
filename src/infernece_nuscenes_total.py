@@ -6,6 +6,8 @@ import pickle
 from collections import OrderedDict
 from tqdm import tqdm
 
+import _init_pointcept_path
+
 from pointcept.datasets import build_dataset
 from pointcept.models import build_model
 from pointcept.utils.config import Config
