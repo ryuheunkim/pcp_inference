@@ -1,5 +1,5 @@
 .vscode/*
 .vscode/settings.json
 .vscode/launch.json
-extern/*
-test/* # SB_inference.py 테스트 파일들(시각화)
+exp/
+data/

@@ -64,7 +64,7 @@ fi
 
 echo "Dist URL: $DIST_URL"
 
-EXP_DIR=extern/pointcept/exp/${DATASET}/${EXP_NAME}
+EXP_DIR=exp/${DATASET}/${EXP_NAME}
 MODEL_DIR=${EXP_DIR}/model
 CODE_DIR=${EXP_DIR}/code
 CONFIG_DIR=${EXP_DIR}/config.py
@@ -87,7 +87,8 @@ ulimit -n 65536
 #$PYTHON -u "$CODE_DIR"/src/$INF_CODE \
 $PYTHON -u src/$INF_CODE \
   --config-file "$CONFIG_DIR" \
-  --options save_path="$EXP_DIR" weight="${MODEL_DIR}"/"${WEIGHT}".pth  \
+# --options save_path="$EXP_DIR" 
+  --weight="${MODEL_DIR}"/"${WEIGHT}".pth  \
 #   --num-gpus "$NUM_GPU" \
 #   --num-machines "$NUM_MACHINE" \
 #   --machine-rank ${SLURM_NODEID:-0} \
