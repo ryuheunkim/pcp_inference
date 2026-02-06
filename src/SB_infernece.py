@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import _init_pointcept_path
+import nuscenes_mini_dataset  # NuScenesMiniDataset 등록을 위함
 
 from collections import OrderedDict
 from pointcept.datasets import build_dataset
@@ -17,7 +18,7 @@ from tensorboardX import SummaryWriter
 
 POINTCEPT_PATH = os.path.join('extern', 'pointcept')
 
-VERSION = "scannet"
+VERSION = "nuscenes"
 
 if VERSION == "nuscenes": # regsitry 데이터베이스에서 못찾음 이슈 / 
     type = "NuScenesMiniDataset" # 되긴 되는데 부모가 없다고 뜸, 데이터베이스엔 있는듯 v1.0-mini 나 v1.0-trainvald이나...
@@ -25,7 +26,7 @@ if VERSION == "nuscenes": # regsitry 데이터베이스에서 못찾음 이슈 /
     data_root = POINTCEPT_PATH+"/data/nuscenes"
     CONFIGFILE = POINTCEPT_PATH+"/exp/nuscenes/nuscenes-semseg-pt-v3m1-0-base/config.py"
     WEIGHTFILE = POINTCEPT_PATH+"/exp/nuscenes/nuscenes-semseg-pt-v3m1-0-base/model/model_best.pth"
-elif VERSION == "s3dis": # 메모리 뻗음 이슈(RTX4050...)
+elif VERSION == "s3dis": # 메모리 뻗음 이슈(RTX4050...) --> Grid size 조정
     type = "S3DISDataset"
     split = "test" # 아마, 폴더 하나에 방 전체 포인트들이 들어있어서, 너무 커서 메모리가 부족한 걸 꺼...
     data_root = POINTCEPT_PATH+"/data/s3dis"
@@ -46,7 +47,7 @@ data_config = dict(
         dict(type="CenterShift", apply_z=True),
         dict(
             type="GridSample",
-            grid_size=0.02,
+            grid_size=0.05,
             hash_type="fnv",
             mode="train",
             return_grid_coord=True,
@@ -57,7 +58,8 @@ data_config = dict(
         dict(
             type="Collect",
             keys=("coord", "grid_coord", "segment", "name"),
-            feat_keys=("color", "normal"),
+            # feat_keys=("color", "normal"), # nuscenes에는 feat_keys가 없으므로 주석 처리
+            feat_keys=("coord", "strength", ), # nuscenes 전용
         ),
     ],
     test_mode=False,
@@ -68,7 +70,7 @@ cfg = Config.fromfile(CONFIGFILE)
 checkpoint = WEIGHTFILE
 keywords = "backbone." # module로 바꿔야 하는 거 아닌지?
 replacement = ""
-idx = 300
+idx = 0
 
 if __name__ == "__main__":
     model = build_model(cfg.model).cuda()
@@ -85,7 +87,7 @@ if __name__ == "__main__":
             key = key[7:]  # module.xxx.xxx -> xxx.xxx
         weight[key] = value
     load_state_info = model.load_state_dict(weight, strict=False)
-    print(load_state_info)
+    print(load_state_info) 
     model.eval() # 평가 모델로 전환 (추가된 거임...)
     dataset = build_dataset(data_config)
     data = dataset[idx]
