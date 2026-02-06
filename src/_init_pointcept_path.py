@@ -17,7 +17,7 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-logger = logging.getLogger("PointceptWrapper")
+logger = logging.getLogger("init_pointcept_path")
 
 # --- 1. Path Configuration ---
 try:
@@ -43,8 +43,14 @@ except Exception as e:
 try:
     # Attempt to import key modules from Pointcept
     # This verifies that the library is correctly linked
-    from pointcept.models import build_model
     from pointcept.datasets import build_dataset
+    from pointcept.models import build_model
+    from pointcept.datasets.transform import Compose
+    from pointcept.utils.config import Config
+    from pointcept.utils.visualization import save_point_cloud
+    from pointcept.utils.comm import get_world_size
+    from pointcept.datasets.utils import point_collate_fn
+
     
     # If successful, log a success message in green
     logger.info(f"{GREEN}Pointcept module loaded successfully.{RESET}")
